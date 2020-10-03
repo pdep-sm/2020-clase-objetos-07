@@ -1,0 +1,56 @@
+import modelo.*
+
+describe "Néflis" {
+	
+	const it = new Pelicula(genero = "Terror", duracion = 140)
+	const pilot = new Capitulo(duracion = 50, temporada = null)
+	const temporada1 = new Temporada(capitulos = [pilot], serie = null)
+	const blackSails = new Serie(temporadas = [temporada1], genero = "Acción")
+	const leo = new Usuario(contenidosVistos = #{it, pilot})
+	
+	fixture {
+		pilot.temporada(temporada1)
+		temporada1.serie(blackSails)
+	}
+
+	/* Punto 1: Saber si un usuario vio un contenido dado en forma completa */
+	test "Usuario vio película" {
+		assert.that(leo.vioCompleto(it))
+	}
+
+	test "Usuario vio capítulo" {
+		assert.that(leo.vioCompleto(pilot))
+	}
+
+	test "Usuario no vio temporada completa" {
+		assert.notThat(leo.vioCompleto(temporada1))
+	}
+	
+	test "Usuario no vio serie completa" {
+		assert.notThat(leo.vioCompleto(blackSails))
+	}
+	
+	/* Punto 2: Saber la duración de un contenido */
+	test "Duración de temporada" {
+		assert.equals(50, temporada1.duracion())
+	}
+
+	test "Duración de serie" {
+		assert.equals(50, blackSails.duracion())		
+	}
+	
+	/* Punto 3: Determinar el último capítulo disponible de una serie */
+	test "Último capítulo de una serie" {
+		assert.equals(pilot, blackSails.ultimoCapitulo())
+	}
+
+	/* Punto 4.a: Saber los géneros que vio un usuario, sin repetición */
+	test "Géneros que vio un usuario" {
+		assert.equals(#{"Terror", "Acción"}, leo.generosQueVio())
+	}
+
+	/* Punto 4.b: Saber el género preferido de un usuario */
+	test "Género preferido de un usuario" {
+		assert.equals("Terror", leo.generoPreferido())
+	}
+}
