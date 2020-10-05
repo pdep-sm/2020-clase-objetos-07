@@ -4,7 +4,7 @@ describe "Néflis" {
 	
 	const it = new Pelicula(genero = "Terror", duracion = 140)
 	const pilot = new Capitulo(duracion = 50, temporada = null)
-	const temporada1 = new Temporada(capitulos = [pilot], serie = null)
+	const temporada1 = new Temporada(capitulos = [pilot], serie = null, cantidadCapitulos = 2)
 	const blackSails = new Serie(temporadas = [temporada1], genero = "Acción")
 	const leo = new Usuario(contenidosVistos = #{it, pilot})
 	

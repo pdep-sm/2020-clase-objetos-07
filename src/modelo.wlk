@@ -57,7 +57,7 @@ class ContenidoCompuesto inherits Contenido {
 
 class Temporada inherits ContenidoCompuesto {
 	const capitulos = []
-	const cantidadCapitulos = 2
+	const cantidadCapitulos
 	var property serie
 
 	override method componentes() = capitulos
