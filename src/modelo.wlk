@@ -101,9 +101,13 @@ class Temporada inherits ContenidoCompuesto {
 	
 	method validarNumeroCapitulo(numero) {
 		if (not (numero == capitulos.size() + 1))
-			throw new NumeroCapituloInvalidoException(message = "Sólo puede agregarse el siguiente capítulo a los existentes")			
+			throw new NumeroCapituloInvalidoException(
+				message = "Sólo puede agregarse el siguiente capítulo a los existentes"
+			)			
 		if (numero > cantidadCapitulos)
-			throw new NumeroCapituloInvalidoException(message = "La temporada ya está completa")			
+			throw new NumeroCapituloInvalidoException(
+				message = "La temporada ya está completa"
+			)			
 	}
 }
 
@@ -128,8 +132,9 @@ class Actor {
 object repositorio {
 	const property destacados = #{}
 	
-	method recomiendaA(usuario) =
-		destacados.union(usuario.vioIncompleto())
+	/* Punto 6 */
+	/* method recomiendaA(usuario) =
+		destacados.union(usuario.vioIncompleto()) */
 }
 
 class NumeroCapituloInvalidoException inherits Exception {}
