@@ -18,11 +18,15 @@ class Usuario {
 		self.contenidosDelGenero(genero).sum { contenido => contenido.duracion() }
 			
 	method contenidosDelGenero(genero) = 
-		contenidosVistos.filter{ contenido => contenido.esDeGenero(genero) }
+		contenidosVistos.filter { contenido => contenido.esDeGenero(genero) }
+		
+	/* Punto 5.b */
+	method esFanDe(actor) = contenidosVistos.all { contenido => contenido.actuo(actor) }
 }
 
 class Contenido {
 	method genero()
+	method actuo(actor)
 	
 	method esDeGenero(genero) = genero == self.genero()
 }
@@ -35,13 +39,20 @@ class ContenidoUnitario inherits Contenido {
 }
 
 class Pelicula inherits ContenidoUnitario {
-	const property genero = ""
+	const property genero
+	const property actores = #{}
+	
+	override method actuo(actor) = actores.contains(actor)
 }
 
 class Capitulo inherits ContenidoUnitario { 
 	var property temporada
+	const property actoresInvitados = #{}
 	
 	override method genero() = temporada.genero()
+	
+	override method actuo(actor) = 
+		actoresInvitados.contains(actor) or temporada.protagonizadoPor(actor)
 }
 
 class ContenidoCompuesto inherits Contenido {
@@ -49,10 +60,13 @@ class ContenidoCompuesto inherits Contenido {
 	
 	/* Punto 2 */
 	method duracion() = 
-		self.componentes().sum{ componente => componente.duracion() }
+		self.componentes().sum { componente => componente.duracion() }
 	
 	method fueVistoCompleto(usuario) =
 		self.componentes().all { componente => usuario.vioCompleto(componente) }
+
+	override method actuo(actor) = 
+		self.componentes().any { componente => componente.actuo(actor) }
 }
 
 class Temporada inherits ContenidoCompuesto {
@@ -70,14 +84,52 @@ class Temporada inherits ContenidoCompuesto {
  	method ultimoCapitulo() = capitulos.last()
  	
 	override method genero() = serie.genero()
+	
+	method protagonizadoPor(actor) = serie.protagonizadaPor(actor)
+	
+	/* Punto 7 */
+	method crearCapitulo(duracion, numero, actoresInvitados) {
+		self.validarNumeroCapitulo(numero)
+		const capitulo = 
+			new Capitulo(
+				duracion = duracion, 
+				temporada = self,
+				actoresInvitados = actoresInvitados
+			)
+		capitulos.add(capitulo)
+	}
+	
+	method validarNumeroCapitulo(numero) {
+		if (not (numero == capitulos.size() + 1))
+			throw new NumeroCapituloInvalidoException(message = "Sólo puede agregarse el siguiente capítulo a los existentes")			
+		if (numero > cantidadCapitulos)
+			throw new NumeroCapituloInvalidoException(message = "La temporada ya está completa")			
+	}
 }
 
 class Serie inherits ContenidoCompuesto {
 	const temporadas = []
 	const property genero = ""
+	const property actores = #{}
 	
 	override method componentes() = temporadas
 	
 	/* Punto 3 */
 	method ultimoCapitulo() = temporadas.last().ultimoCapitulo()
+	
+	method protagonizadaPor(actor) = actores.contains(actor)
 }
+
+class Actor {
+	/* Punto 5.a */
+	method actuoEn(contenido) = contenido.actuo(self)
+}
+
+object repositorio {
+	const property destacados = #{}
+	
+	method recomiendaA(usuario) =
+		destacados.union(usuario.vioIncompleto())
+}
+
+class NumeroCapituloInvalidoException inherits Exception {}

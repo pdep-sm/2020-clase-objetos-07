@@ -2,8 +2,9 @@ import modelo.*
 
 describe "Néflis" {
 	
+	const franco = new Actor()
 	const it = new Pelicula(genero = "Terror", duracion = 140)
-	const pilot = new Capitulo(duracion = 50, temporada = null)
+	const pilot = new Capitulo(duracion = 50, temporada = null, actoresInvitados = #{franco})
 	const temporada1 = new Temporada(capitulos = [pilot], serie = null, cantidadCapitulos = 2)
 	const blackSails = new Serie(temporadas = [temporada1], genero = "Acción")
 	const leo = new Usuario(contenidosVistos = #{it, pilot})
@@ -53,4 +54,22 @@ describe "Néflis" {
 	test "Género preferido de un usuario" {
 		assert.equals("Terror", leo.generoPreferido())
 	}
+	
+	/* Punto 5.a */
+	test "Actor actuó en serie" {
+		assert.that(franco.actuoEn(blackSails))
+	}
+	
+	/* Punto 5.b */
+	test "Usuario no es fan de actor" {
+		assert.notThat(leo.esFanDe(franco))
+	}
+	
+	/* Punto 7 */
+	test "No puedo crear capítulo si no es el siguiente" {
+		assert.throwsExceptionWithMessage(
+			"Sólo puede agregarse el siguiente capítulo a los existentes",
+			{ temporada1.crearCapitulo(48, 3, #{}) }
+		)
+	}	
 }
